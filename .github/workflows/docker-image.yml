@@ -29,15 +29,15 @@ jobs:
         id: version
         run: |
           rev=$(python - <<'PY'
-import re
-from pathlib import Path
-text = Path('nix/sources/clawdbot-source.nix').read_text()
-match = re.search(r'rev\s*=\s*"([^"]+)"', text)
-if not match:
-    raise SystemExit('rev not found in nix/sources/clawdbot-source.nix')
-print(match.group(1))
+          import re
+          from pathlib import Path
+          text = Path('nix/sources/clawdbot-source.nix').read_text()
+          match = re.search(r'rev\s*=\s*"([^"]+)"', text)
+          if not match:
+              raise SystemExit('rev not found in nix/sources/clawdbot-source.nix')
+          print(match.group(1))
 PY
-)
+          )
           echo "rev=$rev" >> "$GITHUB_OUTPUT"
 
       - name: Build image (aarch64-linux)
