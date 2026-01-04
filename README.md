@@ -96,9 +96,9 @@ Use this for the simplest setup. For richer config (per‑group overrides), use
       apiKeyFile = "/run/agenix/anthropic-api-key"; # any file path works
     };
 
-    # No plugin settings needed for hello‑world.
+    # Built‑ins (tools + skills) shipped via nix-stepiete-tools.
     plugins = [
-      { source = "github:acme/hello-world"; }
+      { source = "github:clawdbot/nix-stepiete-tools?dir=tools/summarize"; }
     ];
   };
 }
@@ -143,9 +143,11 @@ Docs are managed from `./documents` and symlinked into the workspace on each swi
 
       launchd.enable = true;
 
-      # Plugins (prod: pinned GitHub). Built‑ins are already included.
+      # Plugins (prod: pinned GitHub). Built‑ins are via nix-stepiete-tools.
       # MVP target: repo pointers resolve to tools + skills automatically.
       plugins = [
+        { source = "github:clawdbot/nix-stepiete-tools?dir=tools/oracle"; }
+        { source = "github:clawdbot/nix-stepiete-tools?dir=tools/peekaboo"; }
         { source = "github:joshp123/xuezh"; }
         {
           source = "github:joshp123/padel-cli";
