@@ -526,7 +526,7 @@ in
       }; };
       };
       thinkingDefault = lib.mkOption {
-        type = t.oneOf [ t.enum [ "off" ] t.enum [ "minimal" ] t.enum [ "low" ] t.enum [ "medium" ] t.enum [ "high" ] ];
+        type = t.oneOf [ t.enum [ "off" ] t.enum [ "minimal" ] t.enum [ "low" ] t.enum [ "medium" ] t.enum [ "high" ] t.enum [ "xhigh" ] ];
       };
       timeoutSeconds = lib.mkOption {
         type = t.int;
@@ -684,7 +684,14 @@ in
       }; };
       };
       model = lib.mkOption {
-        type = t.str;
+        type = t.oneOf [ t.str t.submodule { options = {
+        fallbacks = lib.mkOption {
+          type = t.listOf (t.str);
+        };
+        primary = lib.mkOption {
+          type = t.str;
+        };
+      }; } ];
       };
       name = lib.mkOption {
         type = t.str;
@@ -1069,6 +1076,12 @@ in
 
   commands = lib.mkOption {
     type = t.submodule { options = {
+    bash = lib.mkOption {
+      type = t.bool;
+    };
+    bashForegroundMs = lib.mkOption {
+      type = t.int;
+    };
     config = lib.mkOption {
       type = t.bool;
     };
