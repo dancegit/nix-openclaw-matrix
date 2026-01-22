@@ -195,7 +195,7 @@ in
         type = t.int;
       };
       elevatedDefault = lib.mkOption {
-        type = t.oneOf [ t.enum [ "off" ] t.enum [ "on" ] ];
+        type = t.oneOf [ t.enum [ "off" ] t.enum [ "on" ] t.enum [ "ask" ] t.enum [ "full" ] ];
       };
       envelopeElapsed = lib.mkOption {
         type = t.oneOf [ t.enum [ "on" ] t.enum [ "off" ] ];
@@ -234,6 +234,9 @@ in
           type = t.str;
         };
         prompt = lib.mkOption {
+          type = t.str;
+        };
+        session = lib.mkOption {
           type = t.str;
         };
         target = lib.mkOption {
@@ -455,6 +458,9 @@ in
           type = t.attrsOf (t.anything);
         };
       }; });
+      };
+      repoRoot = lib.mkOption {
+        type = t.str;
       };
       sandbox = lib.mkOption {
         type = t.submodule { options = {
@@ -702,6 +708,9 @@ in
         prompt = lib.mkOption {
           type = t.str;
         };
+        session = lib.mkOption {
+          type = t.str;
+        };
         target = lib.mkOption {
           type = t.oneOf [ t.enum [ "last" ] t.enum [ "whatsapp" ] t.enum [ "telegram" ] t.enum [ "discord" ] t.enum [ "slack" ] t.enum [ "msteams" ] t.enum [ "signal" ] t.enum [ "imessage" ] t.enum [ "none" ] ];
         };
@@ -728,6 +737,9 @@ in
       };
       identity = lib.mkOption {
         type = t.submodule { options = {
+        avatar = lib.mkOption {
+          type = t.str;
+        };
         emoji = lib.mkOption {
           type = t.str;
         };
@@ -1123,6 +1135,9 @@ in
               type = t.bool;
             };
           }; };
+          };
+          approvalRunningNoticeMs = lib.mkOption {
+            type = t.int;
           };
           ask = lib.mkOption {
             type = t.enum [ "off" "on-miss" "always" ];
@@ -2222,11 +2237,17 @@ in
       mediaAllowHosts = lib.mkOption {
         type = t.listOf (t.str);
       };
+      mediaMaxMb = lib.mkOption {
+        type = t.number;
+      };
       replyStyle = lib.mkOption {
         type = t.enum [ "thread" "top-level" ];
       };
       requireMention = lib.mkOption {
         type = t.bool;
+      };
+      sharePointSiteId = lib.mkOption {
+        type = t.str;
       };
       teams = lib.mkOption {
         type = t.attrsOf (t.submodule { options = {
@@ -4027,6 +4048,14 @@ in
   }; };
   };
 
+  media = lib.mkOption {
+    type = t.submodule { options = {
+    preserveFilenames = lib.mkOption {
+      type = t.bool;
+    };
+  }; };
+  };
+
   messages = lib.mkOption {
     type = t.submodule { options = {
     ackReaction = lib.mkOption {
@@ -5218,6 +5247,16 @@ in
 
   ui = lib.mkOption {
     type = t.submodule { options = {
+    assistant = lib.mkOption {
+      type = t.submodule { options = {
+      avatar = lib.mkOption {
+        type = t.str;
+      };
+      name = lib.mkOption {
+        type = t.str;
+      };
+    }; };
+    };
     seamColor = lib.mkOption {
       type = t.str;
     };
