@@ -17,12 +17,12 @@ const schemaUrl = pathToFileURL(schemaPath).href;
 
 const loadSchema = async (): Promise<Record<string, unknown>> => {
   const mod = await import(schemaUrl);
-  const OpenClawSchema = mod.OpenClawSchema;
-  if (!OpenClawSchema || typeof OpenClawSchema.toJSONSchema !== "function") {
-    console.error(`OpenClawSchema not found at ${schemaPath}`);
+  const schema = mod.OpenClawSchema ?? mod.MoltbotSchema;
+  if (!schema || typeof schema.toJSONSchema !== "function") {
+    console.error(`OpenClawSchema/MoltbotSchema not found at ${schemaPath}`);
     process.exit(1);
   }
-  return OpenClawSchema.toJSONSchema({
+  return schema.toJSONSchema({
     target: "draft-07",
     unrepresentable: "any",
   }) as Record<string, unknown>;
@@ -244,7 +244,7 @@ const renderOption = (key: string, schemaObj: JsonSchema, _required: boolean, in
     .map((key) => renderOption(key, rootProps[key], requiredRoot.has(key), "  "))
     .join("\n\n");
 
-  const output = `# Generated from upstream Moltbot schema. DO NOT EDIT.\n{ lib }:\nlet\n  t = lib.types;\nin\n{\n${body}\n}\n`;
+  const output = `# Generated from upstream OpenClaw schema. DO NOT EDIT.\n{ lib }:\nlet\n  t = lib.types;\nin\n{\n${body}\n}\n`;
 
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, output, "utf8");
