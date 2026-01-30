@@ -1,4 +1,4 @@
-# Generated from upstream Openclaw schema. DO NOT EDIT.
+# Generated from upstream OpenClaw schema. DO NOT EDIT.
 { lib }:
 let
   t = lib.types;
