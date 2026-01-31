@@ -54,3 +54,10 @@ output_path="./generated-config-options.nix"
 ./node_modules/.bin/tsx ./generate-config-options.ts --repo . --out "$output_path"
 
 diff -u "$CONFIG_OPTIONS_GOLDEN" "$output_path"
+
+if [ -n "${HM_MODULE_FILE:-}" ] && [ -f "$HM_MODULE_FILE" ]; then
+  if grep -n "/bin/" "$HM_MODULE_FILE" | grep -v "/usr/bin/"; then
+    echo "HM module uses /bin paths; use run + coreutils instead." >&2
+    exit 1
+  fi
+fi

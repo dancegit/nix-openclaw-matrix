@@ -160,6 +160,7 @@ stdenv.mkDerivation (finalAttrs: {
     CONFIG_OPTIONS_GOLDEN = "${../generated/openclaw-config-options.nix}";
     NODE_ENGINE_CHECK = "${../scripts/check-node-engine.ts}";
     OPENCLAW_PLUGIN_EVAL = pluginEvalKey;
+    HM_MODULE_FILE = "${../modules/home-manager/openclaw/config.nix}";
   };
 
   buildPhase = "${../scripts/gateway-tests-build.sh}";
