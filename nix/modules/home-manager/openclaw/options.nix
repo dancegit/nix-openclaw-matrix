@@ -154,6 +154,11 @@ in {
         default = false;
         description = "Enable the gogcli plugin (first-party).";
       };
+      goplaces.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable the goplaces plugin (first-party).";
+      };
       bird.enable = lib.mkOption {
         type = lib.types.bool;
         default = false;

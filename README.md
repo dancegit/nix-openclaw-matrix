@@ -255,6 +255,7 @@ programs.openclaw.firstParty = {
   sag.enable = false;        # Text-to-speech
   camsnap.enable = false;    # Camera snapshots
   gogcli.enable = false;     # Google Calendar
+  goplaces.enable = true;    # Google Places API
   bird.enable = false;       # Twitter/X
   sonoscli.enable = false;   # Sonos control
   imsg.enable = false;       # iMessage
@@ -270,6 +271,7 @@ programs.openclaw.firstParty = {
 | `sag` | Text-to-speech |
 | `camsnap` | Take photos from connected cameras |
 | `gogcli` | Google Calendar integration |
+| `goplaces` | Google Places API (New) CLI |
 | `bird` | Twitter/X integration |
 | `sonoscli` | Control Sonos speakers |
 | `imsg` | Send/read iMessages |
@@ -742,7 +744,7 @@ home-manager switch --rollback  # revert
 
 **macOS**: peekaboo, blucli
 
-**Integrations**: gogcli, wacli, bird, mcporter
+**Integrations**: gogcli, goplaces, wacli, bird, mcporter
 
 ---
 
