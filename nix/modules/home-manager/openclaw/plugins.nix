@@ -116,7 +116,7 @@ let
           base = "${toRelative (resolvePath inst.workspaceDir)}/skills";
           skillEntriesFor = p:
             map (skillPath: {
-              name = "${base}/${p.name}/${builtins.baseNameOf skillPath}";
+              name = "${base}/${builtins.baseNameOf skillPath}";
               value = { source = skillPath; recursive = true; };
             }) p.skills;
           plugins = resolvedPluginsByInstance.${instName} or [];
