@@ -44,7 +44,7 @@ Me: "transcribe this voice note"
 Bot: *runs whisper, sends you text*
 ```
 
-You talk to Telegram, your machine does things.
+You talk to Matrix, your machine does things.
 
 **One flake, everything works.** Gateway + tools everywhere; macOS app on macOS.
 
@@ -126,8 +126,8 @@ What I need you to do:
 2. Create a local flake at ~/code/openclaw-local using templates/agent-first/flake.nix
 3. Create a docs dir next to the config (e.g., ~/code/openclaw-local/documents) with AGENTS.md, SOUL.md, TOOLS.md (optional: IDENTITY.md, USER.md, LORE.md, HEARTBEAT.md, PROMPTING-EXAMPLES.md)
    - If ~/.openclaw/workspace already has these files, adopt them into the documents dir first (use copy/rsync that dereferences symlinks, e.g. `cp -L`)
-4. Help me create a Telegram bot (@BotFather) and get my chat ID (@userinfobot)
-5. Set up secrets (bot token, Anthropic key) - plain files at ~/.secrets/ is fine
+4. Help me create a Matrix account and get an access token for the bot
+5. Set up secrets (Matrix token/password, Anthropic key) - plain files at ~/.secrets/ is fine
 6. Fill in the template placeholders and run home-manager switch
 7. Verify: service running, bot responds to messages
 
@@ -144,7 +144,7 @@ Your agent will install Nix, create your config, and get Openclaw running. You j
 
 **What happens next:**
 1. Your agent sets everything up and runs `home-manager switch`
-2. You message your Telegram bot for the first time
+2. You start a direct message with your Matrix bot for the first time
 3. Openclaw runs its **bootstrap ritual** - it asks you playful questions: *"Who am I? What am I? Who are you?"* - to learn its identity and yours
 4. Once you've named it and introduced yourself, the bootstrap is done. You're up and running.
 
@@ -163,7 +163,7 @@ Your agent will install Nix, create your config, and get Openclaw running. You j
    - `system` = `aarch64-darwin` (Apple Silicon) or `x86_64-darwin` (Intel)
    - `home.username` and `home.homeDirectory`
    - `programs.openclaw.documents` with `AGENTS.md`, `SOUL.md`, `TOOLS.md` (optional: `IDENTITY.md`, `USER.md`, `LORE.md`, `HEARTBEAT.md`, `PROMPTING-EXAMPLES.md`)
-   - Provider secrets (Telegram/Discord tokens, Anthropic API key)
+   - Provider secrets (Matrix tokens, Anthropic API key)
 4. Apply:
    ```bash
    home-manager switch --flake .#<user>
@@ -185,7 +185,7 @@ Your agent will install Nix, create your config, and get Openclaw running. You j
    - `system` = `x86_64-linux`
    - `home.username` and `home.homeDirectory` (e.g., `/home/<user>`)
    - `programs.openclaw.documents` with `AGENTS.md`, `SOUL.md`, `TOOLS.md` (optional: `IDENTITY.md`, `USER.md`, `LORE.md`, `HEARTBEAT.md`, `PROMPTING-EXAMPLES.md`)
-   - Provider secrets (Telegram/Discord tokens, Anthropic API key)
+   - Provider secrets (Matrix tokens, Anthropic API key)
 4. Apply:
    ```bash
    home-manager switch --flake .#<user>
@@ -203,7 +203,7 @@ Your agent will install Nix, create your config, and get Openclaw running. You j
 ## How It Works
 
 ```
-You (Telegram/Discord) --> Gateway --> Tools --> Your machine does things
+You (Matrix) --> Gateway --> Tools --> Your machine does things
 ```
 
 **Gateway**: The brain. A service running on your machine that receives messages and decides what to do. Managed by launchd on macOS and a systemd user service on Linux.
@@ -444,12 +444,14 @@ Deliverables: flake output, env overrides, AGENTS.md, skill update.
 
 ### What Openclaw needs (minimum)
 
-1. **Telegram bot token file** - create via [@BotFather](https://t.me/BotFather), set `channels.telegram.tokenFile`
-2. **Your Telegram user ID** - get from [@userinfobot](https://t.me/userinfobot), set `channels.telegram.allowFrom`
+1. **Matrix bot credentials** - get an access token via the [Matrix login API](https://spec.matrix.org/v1.11/client-server-api/#post_matrixclientv3login), set `programs.openclaw.matrix.accessTokenFile` or `passwordFile`
+2. **Your Matrix user ID** - your bot's full Matrix ID (e.g., `@bot:aboutco.ai`), set `programs.openclaw.matrix.userId`
 3. **Gateway auth token** - set `gateway.auth.token` (or `OPENCLAW_GATEWAY_TOKEN`) for the local gateway
 4. **Provider API keys** - set via environment (e.g., `ANTHROPIC_API_KEY`) or `config.env.vars` (avoid secrets in store)
 
 That's it. Everything else has sensible defaults.
+
+See [docs/matrix.md](docs/matrix.md) for detailed Matrix setup instructions.
 
 ### Minimal config (single instance)
 
@@ -467,10 +469,8 @@ The simplest setup:
         };
       };
 
-      channels.telegram = {
-        tokenFile = "/run/agenix/telegram-bot-token"; # any file path works
-        allowFrom = [ 12345678 ];  # your Telegram user ID
-      };
+      # Matrix is enabled by default - configure via programs.openclaw.matrix
+      # See docs/matrix.md for detailed configuration
     };
 
     # Built-ins (tools + skills) shipped via nix-steipete-tools.
@@ -499,19 +499,8 @@ Uses `instances.default` to unlock per-group mention rules. If `instances` is se
         };
       };
 
-      channels.telegram = {
-        tokenFile = "/run/agenix/telegram-bot-token";
-        allowFrom = [
-          12345678         # you (DM)
-          -1001234567890   # couples group (no @mention required)
-          -1002345678901   # noisy group (require @mention)
-        ];
-        groups = {
-          "*" = { requireMention = true; };
-          "-1001234567890" = { requireMention = false; }; # couples group
-          "-1002345678901" = { requireMention = true; };  # noisy group
-        };
-      };
+      # Matrix is configured via programs.openclaw.matrix (see docs/matrix.md)
+      # The channels.matrix schema is defined by the @openclaw/matrix plugin
     };
 
     instances.default = {
@@ -569,16 +558,12 @@ inputs = {
 
 let
   prodConfig = {
-    channels.telegram = {
-      tokenFile = "/run/agenix/telegram-prod";
-      allowFrom = [ 12345678 ];
-    };
+    # Matrix configuration for production
+    # See docs/matrix.md for details
   };
   devConfig = {
-    channels.telegram = {
-      tokenFile = "/run/agenix/telegram-dev";
-      allowFrom = [ 12345678 ];
-    };
+    # Matrix configuration for development
+    # See docs/matrix.md for details
   };
   prod = {
     enable = true;
@@ -726,9 +711,9 @@ home-manager switch --rollback  # revert
 | macOS app | ✓ | |
 | Service (launchd/systemd) | ✓ | |
 | Tools (whisper, etc) | ✓ | |
-| Telegram bot token | | ✓ |
+| Matrix bot credentials | | ✓ |
 | Anthropic API key | | ✓ |
-| Chat IDs | | ✓ |
+| Matrix user IDs | | ✓ |
 
 ### Included tools
 
