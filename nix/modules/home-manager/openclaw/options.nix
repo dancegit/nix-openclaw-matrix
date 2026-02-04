@@ -213,5 +213,38 @@ in {
       default = {};
       description = "Openclaw config (schema-typed).";
     };
+
+    # Matrix channel configuration (replaces Telegram)
+    matrix = {
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Enable Matrix channel via @openclaw/matrix plugin (replaces Telegram).";
+      };
+
+      homeserverUrl = lib.mkOption {
+        type = lib.types.str;
+        default = "https://matrix.aboutco.ai/";
+        description = "Matrix homeserver URL.";
+      };
+
+      userId = lib.mkOption {
+        type = lib.types.str;
+        default = "";
+        description = "Matrix bot user ID (e.g., @openclaw-bot:aboutco.ai).";
+      };
+
+      accessTokenFile = lib.mkOption {
+        type = lib.types.str;
+        default = "";
+        description = "Path to file containing Matrix access token (preferred over password).";
+      };
+
+      passwordFile = lib.mkOption {
+        type = lib.types.str;
+        default = "";
+        description = "Path to file containing bot password (alternative to access token).";
+      };
+    };
   };
 }

@@ -155,6 +155,13 @@ let
             CLAWDBOT_STATE_DIR = inst.stateDir;
             CLAWDBOT_IMAGE_BACKEND = "sips";
             CLAWDBOT_NIX_MODE = "1";
+          } // lib.optionalAttrs cfg.matrix.enable {
+            MATRIX_HOMESERVER = cfg.matrix.homeserverUrl;
+            MATRIX_USER_ID = cfg.matrix.userId;
+          } // lib.optionalAttrs (cfg.matrix.enable && cfg.matrix.accessTokenFile != "") {
+            MATRIX_ACCESS_TOKEN = "$(cat ${cfg.matrix.accessTokenFile})";
+          } // lib.optionalAttrs (cfg.matrix.enable && cfg.matrix.passwordFile != "") {
+            MATRIX_PASSWORD = "$(cat ${cfg.matrix.passwordFile})";
           };
         };
       };
@@ -181,6 +188,13 @@ let
             "CLAWDBOT_CONFIG_PATH=${inst.configPath}"
             "CLAWDBOT_STATE_DIR=${inst.stateDir}"
             "CLAWDBOT_NIX_MODE=1"
+          ] ++ lib.optionals cfg.matrix.enable [
+            "MATRIX_HOMESERVER=${cfg.matrix.homeserverUrl}"
+            "MATRIX_USER_ID=${cfg.matrix.userId}"
+          ] ++ lib.optionals (cfg.matrix.enable && cfg.matrix.accessTokenFile != "") [
+            "MATRIX_ACCESS_TOKEN_FILE=${cfg.matrix.accessTokenFile}"
+          ] ++ lib.optionals (cfg.matrix.enable && cfg.matrix.passwordFile != "") [
+            "MATRIX_PASSWORD_FILE=${cfg.matrix.passwordFile}"
           ];
           StandardOutput = "append:${inst.logPath}";
           StandardError = "append:${inst.logPath}";
